@@ -6,7 +6,6 @@ import uuid
 import boto3
 import mysql.connector
 from aws_advanced_python_wrapper import AwsWrapperConnection
-from mysql.connector import Connect
 from botocore.exceptions import NoCredentialsError, PartialCredentialsError
 from dotenv import load_dotenv
 load_dotenv()
@@ -58,11 +57,12 @@ async def upload_file(file: UploadFile = File(...), message: str = Form(...)):
         # save to database
         if db_to_use == "aws_rds":
             website_db = AwsWrapperConnection.connect(
-                Connect,
+                mysql.connector.Connect,
                 host=db_host,
                 database=db_database,
                 user=db_user,
                 password=db_pw,
+                wrapper_dialect='mysql',
                 plugins="failover")
             website_db_cursor = website_db.cursor()
         elif db_to_use == "local":
@@ -88,11 +88,12 @@ async def read_messages():
     # read from database limit 5
     if db_to_use == "aws_rds":
         website_db = AwsWrapperConnection.connect(
-            Connect,
+            mysql.connector.Connect,
             host=db_host,
             database=db_database,
             user=db_user,
             password=db_pw,
+            wrapper_dialect='mysql',
             plugins="failover")
         website_db_cursor = website_db.cursor()
     elif db_to_use == "local":
