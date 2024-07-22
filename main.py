@@ -56,15 +56,17 @@ async def upload_file(file: UploadFile = File(...), message: str = Form(...)):
 
         # save to database
         if db_to_use == "aws_rds":
-            website_db = AwsWrapperConnection.connect(
-                mysql.connector.Connect,
-                host=db_host,
-                database=db_database,
-                user=db_user,
-                password=db_pw,
-                wrapper_dialect='rds-mysql',
-                plugins="failover")
+            website_db = mysql.connector.connect(host=db_host, user=db_user, password=db_pw, database=db_database)
             website_db_cursor = website_db.cursor()
+            # website_db = AwsWrapperConnection.connect(
+            #     mysql.connector.Connect,
+            #     host=db_host,
+            #     database=db_database,
+            #     user=db_user,
+            #     password=db_pw,
+            #     wrapper_dialect='rds-mysql',
+            #     plugins="failover")
+            # website_db_cursor = website_db.cursor()
         elif db_to_use == "local":
             website_db = mysql.connector.connect(host=db_host, user=db_user, password=db_pw, database=db_database)
             website_db_cursor = website_db.cursor()
@@ -87,15 +89,17 @@ async def upload_file(file: UploadFile = File(...), message: str = Form(...)):
 async def read_messages():
     # read from database limit 5
     if db_to_use == "aws_rds":
-        website_db = AwsWrapperConnection.connect(
-            mysql.connector.Connect,
-            host=db_host,
-            database=db_database,
-            user=db_user,
-            password=db_pw,
-            wrapper_dialect='rds-mysql',
-            plugins="failover")
+        website_db = mysql.connector.connect(host=db_host, user=db_user, password=db_pw, database=db_database)
         website_db_cursor = website_db.cursor()
+        # website_db = AwsWrapperConnection.connect(
+        #     mysql.connector.Connect,
+        #     host=db_host,
+        #     database=db_database,
+        #     user=db_user,
+        #     password=db_pw,
+        #     wrapper_dialect='rds-mysql',
+        #     plugins="failover")
+        # website_db_cursor = website_db.cursor()
     elif db_to_use == "local":
         website_db = mysql.connector.connect(host=db_host, user=db_user, password=db_pw, database=db_database)
         website_db_cursor = website_db.cursor()
