@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../static/styles.css">
+    <title>Message Board with S3 and RDS</title>
+</head>
+<body>
+    <h2>在此留言</h2>
+
+    <div id="message-upload">
+        <form id="upload-form">
+            <div>
+                <label for="text-id">Your message:</label>
+                <input type="text" id="text-id" name="text-name">
+            </div>
+            <div>
+                <label for="file-id">Upload an image: (jpg only, max 1MB)</label>
+                <input type="file" id="file-id" name="file-name">
+                <button type="submit">送出</button>
+            </div>
+        </form>
+    </div>
+
+    <h3 id="upload-status-message"></h3>
+    <h3 id="upload-response-message"></h3>
+
+    <h2>留言一覽</h2>
+    <h4>顯示最近的5則留言</h4>
+
+    <div id="message-board"></div>
+
+    <script src="static/script.js"></script>
+</body>
+</html>
