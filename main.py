@@ -57,14 +57,14 @@ async def upload_file(file: UploadFile = File(...), message: str = Form(...)):
 
         # save to database
         if db_to_use == "aws_rds":
-            with AwsWrapperConnection.connect(
+            website_db = AwsWrapperConnection.connect(
                 Connect,
-                f"host={db_host} database={db_database} user={db_user} password={db_pw}",
-                plugins="failover",
-                # wrapper_dialect="aurora-mysql",
-                # autocommit=True) as awsconn:
-                wrapper_dialect="rds-mysql") as website_db:
-                website_db_cursor = website_db.cursor()
+                host=db_host,
+                database=db_database,
+                user=db_user,
+                password=db_pw,
+                plugins="failover")
+            website_db_cursor = website_db.cursor()
         elif db_to_use == "local":
             website_db = mysql.connector.connect(host=db_host, user=db_user, password=db_pw, database=db_database)
             website_db_cursor = website_db.cursor()
@@ -87,14 +87,14 @@ async def upload_file(file: UploadFile = File(...), message: str = Form(...)):
 async def read_messages():
     # read from database limit 5
     if db_to_use == "aws_rds":
-        with AwsWrapperConnection.connect(
+        website_db = AwsWrapperConnection.connect(
             Connect,
-            f"host={db_host} database={db_database} user={db_user} password={db_pw}",
-            plugins="failover",
-            # wrapper_dialect="aurora-mysql",
-            # autocommit=True) as awsconn:
-            wrapper_dialect="aurora-mysql") as website_db:
-            website_db_cursor = website_db.cursor()
+            host=db_host,
+            database=db_database,
+            user=db_user,
+            password=db_pw,
+            plugins="failover")
+        website_db_cursor = website_db.cursor()
     elif db_to_use == "local":
         website_db = mysql.connector.connect(host=db_host, user=db_user, password=db_pw, database=db_database)
         website_db_cursor = website_db.cursor()
