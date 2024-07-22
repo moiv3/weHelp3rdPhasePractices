@@ -11,14 +11,15 @@ from botocore.exceptions import NoCredentialsError, PartialCredentialsError
 from dotenv import load_dotenv
 load_dotenv()
 
-db_host = os.getenv("db_host")
-db_user = os.getenv("db_user")
-db_pw = os.getenv("db_pw")
+# db config
 db_to_use = os.getenv("db_to_use")
 if db_to_use == "aws_rds":
-    db_database = os.getenv("db_host_aws_rds")
+    db_host = os.getenv("db_host_aws_rds")
 elif db_to_use == "local":
-    db_database = os.getenv("db_host_local")
+    db_host = os.getenv("db_host_local")
+db_user = os.getenv("db_user")
+db_pw = os.getenv("db_pw")
+db_database=os.getenv("db_database")
 
 app = FastAPI()
 
