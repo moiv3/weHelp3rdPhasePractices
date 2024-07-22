@@ -62,7 +62,7 @@ async def upload_file(file: UploadFile = File(...), message: str = Form(...)):
                 database=db_database,
                 user=db_user,
                 password=db_pw,
-                wrapper_dialect='mysql',
+                wrapper_dialect='rds-mysql',
                 plugins="failover")
             website_db_cursor = website_db.cursor()
         elif db_to_use == "local":
@@ -93,7 +93,7 @@ async def read_messages():
             database=db_database,
             user=db_user,
             password=db_pw,
-            wrapper_dialect='mysql',
+            wrapper_dialect='rds-mysql',
             plugins="failover")
         website_db_cursor = website_db.cursor()
     elif db_to_use == "local":
