@@ -63,7 +63,7 @@ async def upload_file(file: UploadFile = File(...), message: str = Form(...)):
                 plugins="failover",
                 # wrapper_dialect="aurora-mysql",
                 # autocommit=True) as awsconn:
-                wrapper_dialect="aurora-mysql") as website_db:
+                wrapper_dialect="rds-mysql") as website_db:
                 website_db_cursor = website_db.cursor()
         elif db_to_use == "local":
             website_db = mysql.connector.connect(host=db_host, user=db_user, password=db_pw, database=db_database)
