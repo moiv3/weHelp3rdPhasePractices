@@ -7,7 +7,7 @@ function addUploadButtonListener(){
         console.log(messageInput);
 
         if (!messageInput){
-            document.querySelector('#upload-status-message').textContent = 'You suck. Please enter a message.';
+            document.querySelector('#upload-status-message').textContent = 'Error: No message entered.';
             return;
         }
 
@@ -17,7 +17,7 @@ function addUploadButtonListener(){
         const file = fileInput.files[0];
 
         if (!file){
-            document.querySelector('#upload-status-message').textContent = 'You suck. Pick a file please.';
+            document.querySelector('#upload-status-message').textContent = 'Error: No file selected.';
             return;
         }
 
@@ -26,14 +26,14 @@ function addUploadButtonListener(){
         const re = /(\.jpg|\.jpeg|\.bmp|\.gif|\.png)$/i;
 
         if (!re.exec(fileName)) {
-            document.querySelector('#upload-status-message').textContent = 'You suck. Your file has an unsupported extension!';
+            document.querySelector('#upload-status-message').textContent = 'Error: Unsupported file type.';
         }
         else if (fileSizeMb > 1) {        
-            document.querySelector('#upload-status-message').textContent = 'You suck. Your file is too big. The file size is: ' + fileSizeMb + "MB";
+            document.querySelector('#upload-status-message').textContent = 'Error: File is too big. The file size is: ' + fileSizeMb + "MB.";
             return;
         }
         else {        
-            document.querySelector('#upload-status-message').textContent = 'You rock. You picked a file!!! The file size is: ' + fileSizeMb + "MB. Uploading to the cloud...";
+            document.querySelector('#upload-status-message').textContent = 'Check success. The file size is: ' + fileSizeMb + "MB. Uploading to the cloud...";
 
             const formData = new FormData();
             formData.append('file', file);
@@ -47,16 +47,16 @@ function addUploadButtonListener(){
 
                 const result = await response.json();
                 if (response.ok) {
-                    document.querySelector('#upload-response-message').textContent = `We rock! File uploaded successfully: ${result.filename}`;
+                    document.querySelector('#upload-response-message').textContent = `File uploaded successfully: ${result.filename}`;
                     document.querySelector('#message-board').innerHTML = "";
                     readMessageFromDatabase();
                 }
                 else {
-                    document.querySelector('#upload-response-message').textContent = `We suck. Error: ${result.detail}`;
+                    document.querySelector('#upload-response-message').textContent = `Error: ${result.detail}`;
                 }
             }
             catch (error) {
-                document.querySelector('#upload-response-message').textContent = `We suck. Error: ${error.message}`;
+                document.querySelector('#upload-response-message').textContent = `Error: ${error.message}`;
             }
             return;
         }

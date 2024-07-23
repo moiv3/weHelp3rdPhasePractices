@@ -5,7 +5,6 @@ import os
 import uuid
 import boto3
 import mysql.connector
-from aws_advanced_python_wrapper import AwsWrapperConnection
 from botocore.exceptions import NoCredentialsError, PartialCredentialsError
 from dotenv import load_dotenv
 load_dotenv()
@@ -22,7 +21,7 @@ db_database=os.getenv("db_database")
 
 app = FastAPI()
 
-app.mount("/static", StaticFiles(directory="static"), name="static")
+app.mount("/static", StaticFiles(directory="./static"), name="static")
 
 # Initialize the S3 client
 s3_client = boto3.client('s3', region_name=os.getenv("region_name"), 
@@ -58,15 +57,7 @@ async def upload_file(file: UploadFile = File(...), message: str = Form(...)):
         if db_to_use == "aws_rds":
             website_db = mysql.connector.connect(host=db_host, user=db_user, password=db_pw, database=db_database)
             website_db_cursor = website_db.cursor()
-            # website_db = AwsWrapperConnection.connect(
-            #     mysql.connector.Connect,
-            #     host=db_host,
-            #     database=db_database,
-            #     user=db_user,
-            #     password=db_pw,
-            #     wrapper_dialect='rds-mysql',
-            #     plugins="failover")
-            # website_db_cursor = website_db.cursor()
+
         elif db_to_use == "local":
             website_db = mysql.connector.connect(host=db_host, user=db_user, password=db_pw, database=db_database)
             website_db_cursor = website_db.cursor()
@@ -85,21 +76,12 @@ async def upload_file(file: UploadFile = File(...), message: str = Form(...)):
         print(str(e))
         raise HTTPException(status_code=500, detail=str(e))
 
-@app.get("/readMessages/")
+@app.get("/readMessages")
 async def read_messages():
     # read from database limit 5
     if db_to_use == "aws_rds":
         website_db = mysql.connector.connect(host=db_host, user=db_user, password=db_pw, database=db_database)
         website_db_cursor = website_db.cursor()
-        # website_db = AwsWrapperConnection.connect(
-        #     mysql.connector.Connect,
-        #     host=db_host,
-        #     database=db_database,
-        #     user=db_user,
-        #     password=db_pw,
-        #     wrapper_dialect='rds-mysql',
-        #     plugins="failover")
-        # website_db_cursor = website_db.cursor()
     elif db_to_use == "local":
         website_db = mysql.connector.connect(host=db_host, user=db_user, password=db_pw, database=db_database)
         website_db_cursor = website_db.cursor()
@@ -120,23 +102,3 @@ async def read_messages():
         item_dict["create_time"] = item[3]
         output_list.append(item_dict)
     return(output_list)
-
-
-@app.get("/download/{filename}")
-async def download_file(filename: str):
-    try:
-        s3_client.download_file(BUCKET_NAME, filename, filename)
-        s3_object = s3_client.get_object(Bucket=BUCKET_NAME, Key=filename)
-        file_stream = s3_object['Body']
-        return StreamingResponse(file_stream, media_type="image/jpeg")
-    except s3_client.exceptions.NoSuchKey:
-        raise HTTPException(status_code=404, detail="File not found")
-    except (NoCredentialsError, PartialCredentialsError):
-        raise HTTPException(status_code=403, detail="Could not authenticate to S3")
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-from fastapi.responses import FileResponse, StreamingResponse
-
-@app.get("/", include_in_schema=False)
-async def index(request: Request):
-    return FileResponse("./index.html", media_type="text/html")

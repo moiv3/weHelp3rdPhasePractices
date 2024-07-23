@@ -7,18 +7,18 @@
     <title>Message Board with S3 and RDS</title>
 </head>
 <body>
-    <h2>在此留言</h2>
+    <h2>新增一則圖文留言！</h2>
 
     <div id="message-upload">
         <form id="upload-form">
             <div>
-                <label for="text-id">Your message:</label>
-                <input type="text" id="text-id" name="text-name">
+                <label for="text-id">Your message: (max. 255 characters)</label>
+                <input type="text" id="text-id" name="text-name" placeholder="Enter message">
             </div>
             <div>
-                <label for="file-id">Upload an image: (jpg only, max 1MB)</label>
+                <label for="file-id">Upload an image: (jpg/png/gif/bmp only, max. 1MB)</label>
                 <input type="file" id="file-id" name="file-name">
-                <button type="submit">送出</button>
+                <button type="submit">Submit</button>
             </div>
         </form>
     </div>
@@ -26,8 +26,9 @@
     <h3 id="upload-status-message"></h3>
     <h3 id="upload-response-message"></h3>
 
-    <h2>留言一覽</h2>
-    <h4>顯示最近的5則留言</h4>
+    <hr/>
+
+    <h2>留言一覽(顯示最近的5則留言)</h2>
 
     <div id="message-board"></div>
 
