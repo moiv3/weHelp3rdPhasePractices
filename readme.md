@@ -1,6 +1,15 @@
 # Stage3 Backend Project README
 
+## Message Board System
+
+In this repo is a simple message board system using HTML/CSS/JavaScript, FastAPI framework and MySQL DB.
+
+At first the message board was connected to localhost MySQL DB, then moved to AWS RDS MySQL DB after RDS setup complete.
+
+Pictures were first uploaded to AWS S3, then changed to Cloudfront Object URL after Cloudfront distribution setup complete.
+
 ## AWS RDS
+
 1. Run an AWS RDS instance (MySQL 8.0)
 
 2. This RDS is configured to link to EC2, only that EC2 can link to RDS.
@@ -44,8 +53,6 @@ Docker desktop was installed and logged in.
 
 Followed Getting started guide to build an example project.
 
-** Note: Remove those images?
-
 To build this project in docker:
 
 1. Generate/Write requirements.txt
@@ -56,7 +63,7 @@ Go to EC2 instance, cd to project folder, activate virtual env, then run command
 
 2. Write Dockerfile
 
-From FastAPI documentation, take the example Dockerfile and modify as below:
+From FastAPI documentation: https://fastapi.tiangolo.com/deployment/docker/ Take the example Dockerfile and modify as below:
 
 ```
 # Select Required Python Version
@@ -71,7 +78,7 @@ COPY ./requirements.txt /code/requirements.txt
 # Install dependencies
 RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
 
-# Copy static files (not sure if really needed, test)
+# Copy static files
 COPY ./static /code/static
 
 # Copy code
@@ -83,7 +90,7 @@ CMD ["fastapi", "run", "main.py", "--host", "0.0.0.0", "--port", "8000"]
 
 3. Add .dockerignore
 
-Adding .dockerignore can avoid packaging in information when building an image.
+Adding .dockerignore can avoid packaging in sensitive information (like keys, .envs...) when building an image.
 The image building engine ignores files matching the pattern in .dockerignore.
 
 I use the following contents for my .dockerignore:
@@ -100,8 +107,7 @@ Refernce website: https://shisho.dev/blog/posts/how-to-use-dockerignore/
 
 https://docs.docker.com/reference/cli/docker/buildx/build/
 
--t = --tag, followed by desired tag
-. means current directory
+-t = --tag, followed by desired tag, "." means build from current directory.
 
 ```
 docker build -t moiv3/wehelp3rdphaseimage .
@@ -135,6 +141,9 @@ sudo docker images
 Run image
 ```
 sudo docker run -d --name mycontainer -p 8000:8000 --env-file '.env' moiv3/wehelp3rdphaseimage:latest
+
+To map Elastic IP port 80 to container port 8000, use this instead:
+sudo docker run -d --name mycontainer -p 80:8000 --env-file '.env' moiv3/wehelp3rdphaseimage:latest
 ```
 
 Check running status
@@ -148,6 +157,14 @@ Stop/Start container
 docker stop {container}
 docker start {container}
 ```
+
+5. Test docker on another EC2 instance
+
+I started another EC2 instance. Only installed docker, did not install anything else.
+
+docker pulled the image, then run in container. 
+
+The website could run as expected, also connecting to the same db.
 
 ## Domain Name
 
