@@ -179,3 +179,93 @@ The website could run as expected, also connecting to the same db.
 Reference: https://manushka.medium.com/how-to-point-your-godaddy-domain-to-aws-ec2-instance-29011697ec1b
 
 Reference: https://articles.onlinetoknow.com/dns/
+
+## HTTPS
+
+nginx, certbot were used to achieve HTTPS.
+
+### nginx
+
+1. install nginx outside of docker.
+
+2. I run the docker container at 8003 port, so edit nginx config file at /etc/nginx/sites-available/default to reverse proxy from 80 port to http://127.0.0.1:8003
+
+```
+location / {
+                proxy_pass http://127.0.0.1:8003;
+        }
+```
+
+test URL at port 80, it should work.
+
+### certbot
+
+Follow instructions https://certbot.eff.org/instructions?ws=nginx&os=ubuntufocal to install certbot.
+
+If we use certbot --nginx to verify,
+Certbot will create key files on the machine. 
+
+Then, certbot will tell the remote server to visit our machine on port 80 to get these keys to verify.
+So we have to open port 80 on our machine.
+
+After checking port 80, run
+
+```
+sudo certbot --nginx
+```
+
+certbot will also ask if edit nginx config to redirect port 80 to port 443. I choose yes.
+
+Test again using traces.fun:443, now HTTPS certificate is valid.
+
+Test using traces.fun:80, redirects (HTTP code 301) to traces.fun:443
+
+## Load Balancer(ELB)
+
+A load balancer is a server that can redirect requests to a group of instances.
+
+I Use Loader.io to test load.
+
+### Max load for 1 instance: 400~500 requests/s
+
+For 1 instance without load balancer, for 15 sec duration, The server can handle 400 requests/s but not 500 requests/s.
+
+Then add load balancer.
+First add with only 1 instance
+
+Settings:
+LB listens to port 443, routes to target group wehelp-tg4
+wehelp-tg4 has 1 instance port 443.
+
+Check connection ok.
+
+Then redirect domain name DNS A record:
+
+Was: Elastic IP
+To be: Load balancer IPv4 DNS address.
+
+So now, connections to the domain name will go to the ELB, then the ELB will direct to one of its targets. (As of now we have only one target.)
+
+Then add more instances from AMI, then register them to target group.
+
+Now, ELB will redirect requests to one of the two target instances.
+
+### Max load for 2 instances + ELB: 900~1000 requests/s
+
+For 2 instances with load balancer, for 15 sec duration, The server can handle 900 requests/s but not 1000 requests/s.
+
+### Max load for 3 instances + ELB: 1300~1400 requests/s
+
+For 3 instances with load balancer, for 15 sec duration, The server can handle 1300 requests/s but not 1400 requests/s.
+
+### Max load for 3 instances + ELB, 1 down:
+
+I shut down 1 instance and test again with 900 req/s.
+
+Initially, we can see 33% error rate. Then, the error rate decreases to 0%.
+
+ELB also detects this and routes the requests to the remaining 2 instances instead.
+
+Run the test again, and the error rate is 0%.
+
+### Conclusion: ELB can distribute load and detect failed instances.
